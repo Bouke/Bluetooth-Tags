@@ -7,9 +7,16 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import <IOBluetooth/IOBluetooth.h>
 
-@interface WAAppDelegate : NSObject <NSApplicationDelegate>
+@interface WAAppDelegate : NSObject <NSApplicationDelegate, CBCentralManagerDelegate, NSTableViewDataSource>
+{
+    CBCentralManager *manager;
+    NSMutableArray *devices;
+}
 
 @property (assign) IBOutlet NSWindow *window;
-
+@property (strong) IBOutlet NSProgressIndicator *progressIndicator;
+@property (strong) IBOutlet NSTextField *statusText;
+@property (strong) IBOutlet NSTableView *devicesTable;
 @end

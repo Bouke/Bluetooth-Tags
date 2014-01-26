@@ -18,6 +18,7 @@
 		D53A100918956E340098DDAB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D53A0FE818956E340098DDAB /* Cocoa.framework */; };
 		D53A101118956E340098DDAB /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = D53A100F18956E340098DDAB /* InfoPlist.strings */; };
 		D53A101318956E340098DDAB /* BluetoothTagsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D53A101218956E340098DDAB /* BluetoothTagsTests.m */; };
+		D53A101D18956EA10098DDAB /* IOBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D53A101C18956EA10098DDAB /* IOBluetooth.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,6 +51,7 @@
 		D53A100E18956E340098DDAB /* BluetoothTagsTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "BluetoothTagsTests-Info.plist"; sourceTree = "<group>"; };
 		D53A101018956E340098DDAB /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		D53A101218956E340098DDAB /* BluetoothTagsTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BluetoothTagsTests.m; sourceTree = "<group>"; };
+		D53A101C18956EA10098DDAB /* IOBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOBluetooth.framework; path = System/Library/Frameworks/IOBluetooth.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +59,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D53A101D18956EA10098DDAB /* IOBluetooth.framework in Frameworks */,
 				D53A0FE918956E340098DDAB /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -95,6 +98,7 @@
 		D53A0FE718956E340098DDAB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D53A101C18956EA10098DDAB /* IOBluetooth.framework */,
 				D53A0FE818956E340098DDAB /* Cocoa.framework */,
 				D53A100718956E340098DDAB /* XCTest.framework */,
 				D53A0FEA18956E340098DDAB /* Other Frameworks */,
