@@ -12,7 +12,7 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    devices = [[NSMutableArray alloc] init];
+    devices = [[NSMutableDictionary alloc] init];
     manager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
 
     if([self isLECapableHardware])
@@ -24,6 +24,24 @@
 -(BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender
 {
     return YES;
+}
+
+- (void)updateDevices
+{
+    NSDictionary *strongestDevice;
+    NSDate *timeout = [NSDate dateWithTimeIntervalSinceNow:-30];
+    for (NSDictionary *device in [devices objectEnumerator]) {
+        if([timeout compare:[device objectForKey:@"last_seen"]] == NSOrderedDescending) {
+            NSLog(@"Removing... %@ < %@", [device objectForKey:@"last_seen"], timeout);
+            [devices removeObjectForKey:[device objectForKey:@"uuid"]];
+            continue;
+        }
+        if([device objectForKey:@"rssi"] > [strongestDevice objectForKey:@"rssi"]) {
+            strongestDevice = device;
+        }
+    }
+
+    NSLog(@"Strongest peripheral: %@", [strongestDevice objectForKey:@"name"]);
 }
 
 #pragma mark - Start/Stop Scan methods
@@ -86,14 +104,17 @@
 
 -(void)centralManager:(CBCentralManager *)central didDiscoverPeripheral:(CBPeripheral *)peripheral advertisementData:(NSDictionary *)advertisementData RSSI:(NSNumber *)RSSI
 {
-    NSLog(@"Did discover peripheral");
     NSLog(@"UUID: %@ - RSSI: %@", peripheral.identifier, RSSI);
 
-    [devices addObject:[[NSDictionary alloc] initWithObjectsAndKeys:
-                         peripheral.identifier.UUIDString, @"uuid",
-                         peripheral.name, @"name",
-                         RSSI, @"rssi",
-                         nil]];
+    NSString *uuid = peripheral.identifier.UUIDString;
+    [devices setObject: @{
+                          @"uuid": uuid,
+                          @"name": peripheral.name,
+                          @"rssi": RSSI,
+                          @"last_seen": [NSDate date],
+                          }
+                forKey:uuid];
+    [self updateDevices];
     [self.devicesTable reloadData];
     [self.devicesTable scrollToEndOfDocument:nil];
 }
@@ -106,8 +127,8 @@
 
 - (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
 {
-//    return @"";
-    return [[devices objectAtIndex:row] valueForKey:[tableColumn identifier]];
+    NSDictionary *device = [devices objectForKey:[[devices allKeys] objectAtIndex:row]];
+    return [device valueForKey:[tableColumn identifier]];
 }
 
 @end

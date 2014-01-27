@@ -12,7 +12,7 @@
 @interface WAAppDelegate : NSObject <NSApplicationDelegate, CBCentralManagerDelegate, NSTableViewDataSource>
 {
     CBCentralManager *manager;
-    NSMutableArray *devices;
+    NSMutableDictionary *devices;
 }
 
 @property (assign) IBOutlet NSWindow *window;
