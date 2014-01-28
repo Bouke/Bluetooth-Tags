@@ -84,9 +84,7 @@
 
 - (void) startScan
 {
-    NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:YES], CBCentralManagerScanOptionAllowDuplicatesKey, nil];
-
-    [manager scanForPeripheralsWithServices:nil options:options];
+    [manager scanForPeripheralsWithServices:nil options:@{CBCentralManagerScanOptionAllowDuplicatesKey: @YES}];
 
     [self.progressIndicator startAnimation:nil];
     [self.progressIndicator setHidden:FALSE];
@@ -112,11 +110,47 @@
                           @"name": peripheral.name,
                           @"rssi": RSSI,
                           @"last_seen": [NSDate date],
+                          @"peripheral": peripheral,
                           }
                 forKey:uuid];
     [self updateDevices];
     [self.devicesTable reloadData];
     [self.devicesTable scrollToEndOfDocument:nil];
+
+    [peripheral setDelegate:self];
+    if(peripheral.state != CBPeripheralStateConnected) {
+        [manager connectPeripheral:peripheral options:nil];
+    }
+}
+
+- (void)centralManager:(CBCentralManager *)central didConnectPeripheral:(CBPeripheral *)peripheral
+{
+    [peripheral discoverServices:@[[CBUUID UUIDWithString:@"180a"]]];
+}
+
+- (void) peripheral:(CBPeripheral *)peripheral didDiscoverServices:(NSError *)error
+{
+    for(CBService *service in peripheral.services) {
+        if([service.UUID isEqual:[CBUUID UUIDWithString:@"180a"]]) {
+            [peripheral discoverCharacteristics:@[[CBUUID UUIDWithString:@"2a29"]] forService:service];
+        }
+    }
+}
+
+- (void)peripheral:(CBPeripheral *)peripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error
+{
+    if([service.UUID isEqual:[CBUUID UUIDWithString:@"180a"]]) {
+        for(CBCharacteristic *characteristic in service.characteristics) {
+            if([characteristic.UUID isEqual:[CBUUID UUIDWithString:@"2a29"]]) {
+                [peripheral readValueForCharacteristic:characteristic];
+            }
+        }
+    }
+}
+
+- (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
+{
+    NSLog(@"%@: %@", characteristic.UUID, [[NSString alloc] initWithData:characteristic.value encoding:NSASCIIStringEncoding]);
 }
 
 # pragma mark - NSTableViewDataSource

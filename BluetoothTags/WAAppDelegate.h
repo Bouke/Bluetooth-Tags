@@ -9,7 +9,7 @@
 #import <Cocoa/Cocoa.h>
 #import <IOBluetooth/IOBluetooth.h>
 
-@interface WAAppDelegate : NSObject <NSApplicationDelegate, CBCentralManagerDelegate, NSTableViewDataSource>
+@interface WAAppDelegate : NSObject <NSApplicationDelegate, CBCentralManagerDelegate, NSTableViewDataSource, CBPeripheralDelegate>
 {
     CBCentralManager *manager;
     NSMutableDictionary *devices;
