@@ -91,6 +91,13 @@
     [self.statusText setHidden:FALSE];
 }
 
+- (void) stopScan
+{
+    [manager stopScan];
+    [self.progressIndicator setHidden:TRUE];
+    [self.statusText setHidden:TRUE];
+}
+
 #pragma mark - CBCentralManager
 
 -(void)centralManagerDidUpdateState:(CBCentralManager *)central
@@ -102,12 +109,14 @@
 
 -(void)centralManager:(CBCentralManager *)central didDiscoverPeripheral:(CBPeripheral *)peripheral advertisementData:(NSDictionary *)advertisementData RSSI:(NSNumber *)RSSI
 {
-    NSLog(@"UUID: %@ - RSSI: %@", peripheral.identifier, RSSI);
-
     NSString *uuid = peripheral.identifier.UUIDString;
+    NSString *name = peripheral.name;
+    if(!name) {
+        name = @"N/A";
+    }
     [devices setObject: @{
                           @"uuid": uuid,
-                          @"name": peripheral.name,
+                          @"name": name,
                           @"rssi": RSSI,
                           @"last_seen": [NSDate date],
                           @"peripheral": peripheral,
