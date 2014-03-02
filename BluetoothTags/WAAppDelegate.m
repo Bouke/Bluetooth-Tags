@@ -109,19 +109,28 @@
 
 -(void)centralManager:(CBCentralManager *)central didDiscoverPeripheral:(CBPeripheral *)peripheral advertisementData:(NSDictionary *)advertisementData RSSI:(NSNumber *)RSSI
 {
-    NSString *uuid = peripheral.identifier.UUIDString;
+    NSData *data = [advertisementData valueForKey:CBAdvertisementDataManufacturerDataKey];
+    if(!data) {
+        return;  // not an iBeacon
+    }
+
+    unsigned char manufacturerData[21] = {0};
+    [data getBytes:&manufacturerData range:NSMakeRange(4, 20)];
+    NSUUID *uuid = [[NSUUID alloc]initWithUUIDBytes:manufacturerData];
+
     NSString *name = peripheral.name;
     if(!name) {
         name = @"N/A";
     }
+
     [devices setObject: @{
-                          @"uuid": uuid,
+                          @"uuid": [uuid UUIDString],
                           @"name": name,
                           @"rssi": RSSI,
                           @"last_seen": [NSDate date],
                           @"peripheral": peripheral,
                           }
-                forKey:uuid];
+                forKey:advertisementData];
     [self updateDevices];
     [self.devicesTable reloadData];
     [self.devicesTable scrollToEndOfDocument:nil];
