@@ -19,6 +19,8 @@
     {
         [self startScan];
     }
+
+    [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(updateDevices) userInfo:nil repeats:YES];
 }
 
 -(BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender
@@ -30,10 +32,11 @@
 {
     NSDictionary *strongestDevice;
     NSDate *timeout = [NSDate dateWithTimeIntervalSinceNow:-30];
-    for (NSDictionary *device in [devices objectEnumerator]) {
+    for (NSData *key in [devices keyEnumerator]) {
+        NSDictionary *device = [devices objectForKey:key];
         if([timeout compare:[device objectForKey:@"last_seen"]] == NSOrderedDescending) {
             NSLog(@"Removing... %@ < %@", [device objectForKey:@"last_seen"], timeout);
-            [devices removeObjectForKey:[device objectForKey:@"uuid"]];
+            [devices removeObjectForKey:key];
             continue;
         }
         if([device objectForKey:@"rssi"] > [strongestDevice objectForKey:@"rssi"]) {
@@ -42,6 +45,7 @@
     }
 
     NSLog(@"Strongest peripheral: %@", [strongestDevice objectForKey:@"name"]);
+    [self.devicesTable reloadData];
 }
 
 #pragma mark - Start/Stop Scan methods
@@ -132,8 +136,6 @@
                           }
                 forKey:advertisementData];
     [self updateDevices];
-    [self.devicesTable reloadData];
-    [self.devicesTable scrollToEndOfDocument:nil];
 
     [peripheral setDelegate:self];
     if(peripheral.state != CBPeripheralStateConnected) {
