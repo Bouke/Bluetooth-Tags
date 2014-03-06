@@ -469,6 +469,7 @@
 				D53A101818956E350098DDAB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		D53A101918956E350098DDAB /* Build configuration list for PBXNativeTarget "BluetoothTagsTests" */ = {
 			isa = XCConfigurationList;
@@ -477,6 +478,7 @@
 				D53A101B18956E350098DDAB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

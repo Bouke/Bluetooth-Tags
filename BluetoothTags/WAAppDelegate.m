@@ -119,8 +119,11 @@
     }
 
     unsigned char manufacturerData[21] = {0};
-    [data getBytes:&manufacturerData range:NSMakeRange(4, 20)];
+    [data getBytes:&manufacturerData range:NSMakeRange(4, 21)];
     NSUUID *uuid = [[NSUUID alloc]initWithUUIDBytes:manufacturerData];
+
+    NSNumber *major = @((manufacturerData[16] << 8) + (manufacturerData[17] & 255));
+    NSNumber *minor = @((manufacturerData[18] << 8) + (manufacturerData[19] & 255));
 
     NSString *name = peripheral.name;
     if(!name) {
@@ -130,6 +133,8 @@
     [devices setObject: @{
                           @"uuid": [uuid UUIDString],
                           @"name": name,
+                          @"major": major,
+                          @"minor": minor,
                           @"rssi": RSSI,
                           @"last_seen": [NSDate date],
                           @"peripheral": peripheral,

@@ -13,6 +13,7 @@
 {
     CBCentralManager *manager;
     NSMutableDictionary *devices;
+    NSFileHandle *logFileHandle;
 }
 
 @property (assign) IBOutlet NSWindow *window;
