@@ -21,6 +21,18 @@
     }
 
     [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(updateDevices) userInfo:nil repeats:YES];
+
+    // There should be a better way, but this will do for now.
+    NSString *logPath = [[[[NSBundle mainBundle] bundlePath] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"iBeacon Log.csv"];
+    [[NSFileManager defaultManager] createFileAtPath:logPath contents:nil attributes:nil];
+    logFileHandle = [NSFileHandle fileHandleForWritingAtPath:logPath];
+    [logFileHandle truncateFileAtOffset:0];
+    [logFileHandle writeData:[@"UUID,Major,Minor,RSSI\n" dataUsingEncoding:NSASCIIStringEncoding]];
+}
+
+- (void)applicationWillTerminate:(NSNotification *)notification
+{
+    [logFileHandle closeFile];
 }
 
 -(BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender
@@ -130,6 +142,9 @@
         name = @"N/A";
     }
 
+    NSString *logLine = [NSString stringWithFormat:@"%@,%@,%@,%@\n", [uuid UUIDString], [major stringValue], [minor stringValue], [RSSI stringValue]];
+    [logFileHandle writeData:[logLine dataUsingEncoding:NSASCIIStringEncoding]];
+
     [devices setObject: @{
                           @"uuid": [uuid UUIDString],
                           @"name": name,
@@ -143,9 +158,11 @@
     [self updateDevices];
 
     [peripheral setDelegate:self];
-    if(peripheral.state != CBPeripheralStateConnected) {
-        [manager connectPeripheral:peripheral options:nil];
-    }
+    // If connected, we'll not receive new readings from the device.
+    // @todo can we do without?
+//    if(peripheral.state != CBPeripheralStateConnected) {
+//        [manager connectPeripheral:peripheral options:nil];
+//    }
 }
 
 - (void)centralManager:(CBCentralManager *)central didConnectPeripheral:(CBPeripheral *)peripheral
