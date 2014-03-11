@@ -27,7 +27,7 @@
     [[NSFileManager defaultManager] createFileAtPath:logPath contents:nil attributes:nil];
     logFileHandle = [NSFileHandle fileHandleForWritingAtPath:logPath];
     [logFileHandle truncateFileAtOffset:0];
-    [logFileHandle writeData:[@"UUID,Major,Minor,RSSI\n" dataUsingEncoding:NSASCIIStringEncoding]];
+    [logFileHandle writeData:[@"UUID,Major,Minor,Power,RSSI\n" dataUsingEncoding:NSASCIIStringEncoding]];
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification
@@ -136,13 +136,14 @@
 
     NSNumber *major = @((manufacturerData[16] << 8) + (manufacturerData[17] & 255));
     NSNumber *minor = @((manufacturerData[18] << 8) + (manufacturerData[19] & 255));
+    NSNumber *power = @((int8_t)manufacturerData[20]);
 
     NSString *name = peripheral.name;
     if(!name) {
         name = @"N/A";
     }
 
-    NSString *logLine = [NSString stringWithFormat:@"%@,%@,%@,%@\n", [uuid UUIDString], [major stringValue], [minor stringValue], [RSSI stringValue]];
+    NSString *logLine = [NSString stringWithFormat:@"%@,%@,%@,%@,%@\n", [uuid UUIDString], [major stringValue], [minor stringValue], [power stringValue], [RSSI stringValue]];
     [logFileHandle writeData:[logLine dataUsingEncoding:NSASCIIStringEncoding]];
 
     [devices setObject: @{
@@ -150,6 +151,7 @@
                           @"name": name,
                           @"major": major,
                           @"minor": minor,
+                          @"power": power,
                           @"rssi": RSSI,
                           @"last_seen": [NSDate date],
                           @"peripheral": peripheral,
